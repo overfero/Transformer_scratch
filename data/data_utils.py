@@ -1,5 +1,6 @@
 from datasets import load_dataset  # type: ignore
 from torch.utils.data import DataLoader, random_split
+from torch.utils.data.distributed import DistributedSampler
 
 from data.dataset import BilingualDataset
 from data.tokenizer import get_or_build_tokenizer
@@ -17,6 +18,7 @@ def get_dataset(config):
         split="train",
     )
 
+    print(f"GPU {config.local_rank} - Loading tokenizers...")
     tokenizer_src = get_or_build_tokenizer(config, dataset_raw, config["lang_src"])
     tokenizer_tgt = get_or_build_tokenizer(config, dataset_raw, config["lang_tgt"])
 
@@ -53,13 +55,17 @@ def get_dataset(config):
             len(tokenizer_tgt.encode(item["translation"][config["lang_tgt"]]).ids),
         )
 
-    print(f"Max length src: {max_len_src}")
-    print(f"Max length tgt: {max_len_tgt}")
+    print(f"GPU {config.local_rank} - Max length of source sentence: {max_len_src}")
+    print(f"GPU {config.local_rank} - Max length of target sentence: {max_len_tgt}")
 
     train_dataloader = DataLoader(
-        train_ds, batch_size=config["batch_size"], shuffle=True
+        train_ds,
+        batch_size=config["batch_size"],
+        shuffle=False,
+        shuffle=False,
+        sampler=DistributedSampler(train_ds, shuffle=True),
     )
-    val_dataloader = DataLoader(val_ds, batch_size=1, shuffle=False)
+    val_dataloader = DataLoader(val_ds, batch_size=1, shuffle=True)
 
     return train_dataloader, val_dataloader, tokenizer_src, tokenizer_tgt
 
