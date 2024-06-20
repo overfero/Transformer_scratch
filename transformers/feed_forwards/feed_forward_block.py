@@ -9,4 +9,4 @@ class FeedForwardBlock(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x):
-        return self.linear_2(self.dropout(nn.ReLU(self.linear_1(x))))
+        return self.linear_2(self.dropout(nn.ReLU()(self.linear_1(x))))

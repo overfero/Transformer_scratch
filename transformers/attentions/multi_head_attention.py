@@ -9,6 +9,7 @@ class MultiHeadAttentionBlock(nn.Module):
         super().__init__()
         self.h = h
         self.d_model = d_model
+        self.dropout = nn.Dropout(dropout)
         assert d_model % h == 0, "d_model must be divisible by h"
 
         self.d_k = d_model // h
@@ -42,13 +43,9 @@ class MultiHeadAttentionBlock(nn.Module):
         value = value.view(value.shape[0], value.shape[1], self.h, self.d_k).transpose(
             1, 2
         )
-        x, att_score = MultiHeadAttentionBlock.attention(
+        x, self.att_score = MultiHeadAttentionBlock.attention(
             query, key, value, mask, self.dropout
         )
-        x = (
-            x.transpose(1, 2)
-            .contiguous()
-            .view(x.shape[0], x.shape[1], self.h * self.d_k)
-        )
+        x = x.transpose(1, 2).contiguous().view(x.shape[0], -1, self.h * self.d_k)
 
         return self.w_o(x)
