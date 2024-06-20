@@ -19,9 +19,7 @@ def get_or_build_tokenizer(config, dataset, lang):
         trainer = WordLevelTrainer(
             special_tokens=["[UNK]", "[PAD]", "[SOS]", "[EOS]"], min_frequency=2
         )
-        tokenizer.train_from_iterator(
-            get_all_sentences()(dataset, lang), trainer=trainer
-        )
+        tokenizer.train_from_iterator(get_all_sentences(dataset, lang), trainer=trainer)
         tokenizer.save(str(tokenizer_path))
     else:
         tokenizer = Tokenizer.from_file(str(tokenizer_path))
