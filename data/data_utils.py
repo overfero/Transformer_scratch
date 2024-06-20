@@ -62,7 +62,6 @@ def get_dataset(config):
         train_ds,
         batch_size=config["batch_size"],
         shuffle=False,
-        shuffle=False,
         sampler=DistributedSampler(train_ds, shuffle=True),
     )
     val_dataloader = DataLoader(val_ds, batch_size=1, shuffle=True)
