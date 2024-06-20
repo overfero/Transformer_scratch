@@ -5,7 +5,10 @@ from tokenizers.models import WordLevel  # type: ignore
 from tokenizers.pre_tokenizers import Whitespace  # type: ignore
 from tokenizers.trainers import WordLevelTrainer  # type: ignore
 
-from data.data_utils import get_all_sentences
+
+def get_all_sentences(dataset, lang):
+    for item in dataset:
+        yield item["translation"][lang]
 
 
 def get_or_build_tokenizer(config, dataset, lang):

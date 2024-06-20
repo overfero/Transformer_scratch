@@ -6,11 +6,6 @@ from data.dataset import BilingualDataset
 from data.tokenizer import get_or_build_tokenizer
 
 
-def get_all_sentences(dataset, lang):
-    for item in dataset:
-        yield item["translation"][lang]
-
-
 def get_dataset(config):
     dataset_raw = load_dataset(
         "Helsinki-NLP/opus-100",
