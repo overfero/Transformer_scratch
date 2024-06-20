@@ -5,6 +5,7 @@ from dataclasses import dataclass
 class ModelConfig:
     batch_size: int
     num_epochs: int
+    experiment_name: str
     lr: float
     seq_len: int
     d_model: int
@@ -40,6 +41,7 @@ def get_default_config() -> ModelConfig:
     return ModelConfig(
         batch_size=8,
         num_epochs=30,
+        experiment_name="runs/tmodel",
         lr=1e-4,
         seq_len=600,
         d_model=512,
