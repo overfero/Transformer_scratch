@@ -1,15 +1,15 @@
 import torch.nn as nn
 
-from transformers.attentions.multi_head_attention import MultiHeadAttentionBlock
-from transformers.decoders.decoder import Decoder
-from transformers.decoders.decoder_block import DecoderBlock
-from transformers.encoders.encoder import Encoder
-from transformers.encoders.encoder_block import EncoderBlock
-from transformers.feed_forwards.feed_forward_block import FeedForwardBlock
-from transformers.feed_forwards.projection_layer import ProjectionLayer
-from transformers.inputs.input_embedding import InputEmbeddings
-from transformers.inputs.positional_encoding import PositionalEncodings
-from transformers.transformer import Transformer
+from transformer_model.attentions.multi_head_attention import MultiHeadAttentionBlock
+from transformer_model.decoders.decoder import Decoder
+from transformer_model.decoders.decoder_block import DecoderBlock
+from transformer_model.encoders.encoder import Encoder
+from transformer_model.encoders.encoder_block import EncoderBlock
+from transformer_model.feed_forwards.feed_forward_block import FeedForwardBlock
+from transformer_model.feed_forwards.projection_layer import ProjectionLayer
+from transformer_model.inputs.input_embedding import InputEmbeddings
+from transformer_model.inputs.positional_encoding import PositionalEncodings
+from transformer_model.transformer import Transformer
 
 
 def build_transformer(

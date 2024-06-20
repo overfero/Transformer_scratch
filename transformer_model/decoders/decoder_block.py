@@ -1,8 +1,8 @@
 import torch.nn as nn
 
-from transformers.attentions.multi_head_attention import MultiHeadAttentionBlock
-from transformers.feed_forwards.feed_forward_block import FeedForwardBlock
-from transformers.feed_forwards.residual_connection import ResidualConnection
+from transformer_model.attentions.multi_head_attention import MultiHeadAttentionBlock
+from transformer_model.feed_forwards.feed_forward_block import FeedForwardBlock
+from transformer_model.feed_forwards.residual_connection import ResidualConnection
 
 
 class DecoderBlock(nn.Module):
