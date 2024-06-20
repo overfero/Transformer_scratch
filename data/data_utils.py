@@ -9,13 +9,13 @@ from data.tokenizer import get_or_build_tokenizer
 def get_dataset(config):
     dataset_raw = load_dataset(
         "Helsinki-NLP/opus-100",
-        f"{config['lang_src']}-{config['lang_tgt']}",
+        f"{config.lang_src}-{config.lang_tgt}",
         split="train",
     )
 
     print(f"GPU {config.local_rank} - Loading tokenizers...")
-    tokenizer_src = get_or_build_tokenizer(config, dataset_raw, config["lang_src"])
-    tokenizer_tgt = get_or_build_tokenizer(config, dataset_raw, config["lang_tgt"])
+    tokenizer_src = get_or_build_tokenizer(config, dataset_raw, config.lang_src)
+    tokenizer_tgt = get_or_build_tokenizer(config, dataset_raw, config.lang_tgt)
 
     train_ds_size = int(0.9 * len(dataset_raw))
     val_ds_size = len(dataset_raw) - train_ds_size
@@ -25,17 +25,17 @@ def get_dataset(config):
         train_ds_raw,
         tokenizer_src,
         tokenizer_tgt,
-        config["lang_src"],
-        config["lang_tgt"],
-        config["seq_len"],
+        config.lang_src,
+        config.lang_tgt,
+        config.seq_len,
     )
     val_ds = BilingualDataset(
         val_ds_raw,
         tokenizer_src,
         tokenizer_tgt,
-        config["lang_src"],
-        config["lang_tgt"],
-        config["seq_len"],
+        config.lang_src,
+        config.lang_tgt,
+        config.seq_len,
     )
 
     max_len_src = 0
@@ -43,11 +43,11 @@ def get_dataset(config):
     for item in dataset_raw:
         max_len_src = max(
             max_len_src,
-            len(tokenizer_src.encode(item["translation"][config["lang_src"]]).ids),
+            len(tokenizer_src.encode(item["translation"][config.lang_src]).ids),
         )
         max_len_tgt = max(
             max_len_tgt,
-            len(tokenizer_tgt.encode(item["translation"][config["lang_tgt"]]).ids),
+            len(tokenizer_tgt.encode(item["translation"][config.lang_tgt]).ids),
         )
 
     print(f"GPU {config.local_rank} - Max length of source sentence: {max_len_src}")
@@ -55,7 +55,7 @@ def get_dataset(config):
 
     train_dataloader = DataLoader(
         train_ds,
-        batch_size=config["batch_size"],
+        batch_size=config.batch_size,
         shuffle=False,
         sampler=DistributedSampler(train_ds, shuffle=True),
     )
@@ -85,7 +85,7 @@ def load_nex_batch(config, device):
     #     encoder_mask,
     #     tokenizer_src,
     #     tokenizer_tgt,
-    #     config["seq_len"],
+    #     config.seq_len,
     #     device,
     # )
 

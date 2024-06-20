@@ -20,19 +20,19 @@ def train_model(config):
     device = torch.device("cuda")
     print(f"GPU {config.local_rank} - Using device: {device}")
 
-    Path(config["model_folder"]).mkdir(parents=True, exist_ok=True)
+    Path(config.model_folder).mkdir(parents=True, exist_ok=True)
 
     print(f"GPU {config.local_rank} - Loading dataset...")
     train_dataloader, val_dataloader, tokenizer_src, tokenizer_tgt = get_dataset(config)
     model = get_model(
         config, tokenizer_src.get_vocab_size(), tokenizer_tgt.get_vocab_size()
     ).to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=config["lr"], eps=1e-9)
+    optimizer = torch.optim.Adam(model.parameters(), lr=config.lr, eps=1e-9)
     criterion = nn.CrossEntropyLoss(
         ignore_index=tokenizer_src.token_to_id("[PAD]"), label_smoothing=0.1
     ).to(device)
 
-    writer = SummaryWriter(config["experiment_name"])
+    writer = SummaryWriter(config.experiment_name)
 
     initial_epoch = 0
     global_step = 0
@@ -60,7 +60,7 @@ def train_model(config):
 
     model = DistributedDataParallel(model, device_ids=[config.local_rank])
 
-    for epoch in range(initial_epoch, config["num_epochs"]):
+    for epoch in range(initial_epoch, config.num_epochs):
         batch_iterator = tqdm.tqdm(train_dataloader, desc=f"Epoch {epoch}")
         for batch in batch_iterator:
             model.train()
@@ -96,7 +96,7 @@ def train_model(config):
                 val_dataloader,
                 tokenizer_src,
                 tokenizer_tgt,
-                config["seq_len"],
+                config.seq_len,
                 device,
                 lambda msg: batch_iterator.write(msg),
                 global_step,

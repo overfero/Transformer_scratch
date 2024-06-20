@@ -8,14 +8,14 @@ from training.build_transformer import build_transformer
 
 def get_model(config, vocab_src_len, vocab_tgt_len):
     model = build_transformer(
-        vocab_src_len, vocab_tgt_len, config["seq_len"], config["seq_len"]
+        vocab_src_len, vocab_tgt_len, config.seq_len, config.seq_len
     )
     return model
 
 
 def get_weights_file_path(config, epochs):
-    model_folder = config["model_folder"]
-    model_basename = config["model_basename"]
+    model_folder = config.model_folder
+    model_basename = config.model_basename
     model_filename = f"{model_basename}{epochs}.pt"
     return str(Path(".") / model_folder / model_filename)
 
