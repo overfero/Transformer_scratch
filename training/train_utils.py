@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import torch
+import torchmetrics
 
 from config import ModelConfig
 from training.build_transformer import build_transformer
@@ -46,9 +47,9 @@ def greedy_decode(model, src, src_mask, tokenizer_src, tokenizer_tgt, max_len, d
         decoder_mask = (
             (
                 torch.triu(
-                    torch.ones(1, decoder_input.shape[1], decoder_input.shape[1]),
+                    torch.ones((1, decoder_input.shape[1], decoder_input.shape[1])),
                     diagonal=1,
-                )
+                ).type(torch.int)
                 == 0
             )
             .type_as(src_mask)
@@ -81,7 +82,7 @@ def run_validation(
     max_len,
     device,
     print_msg,
-    global_state,
+    global_step,
     writer,
     num_examples=2,
 ):
@@ -117,3 +118,23 @@ def run_validation(
 
             if count == num_examples:
                 break
+
+    if writer:
+        # Evaluate the character error rate
+        # Compute the char error rate
+        metric = torchmetrics.text.CharErrorRate()
+        cer = metric(predicted, expected)
+        writer.add_scalar("validation cer", cer, global_step)
+        writer.flush()
+
+        # Compute the word error rate
+        metric = torchmetrics.text.WordErrorRate()
+        wer = metric(predicted, expected)
+        writer.add_scalar("validation wer", wer, global_step)
+        writer.flush()
+
+        # Compute the BLEU metric
+        metric = torchmetrics.text.BLEUScore()
+        bleu = metric(predicted, expected)
+        writer.add_scalar("validation BLEU", bleu, global_step)
+        writer.flush()

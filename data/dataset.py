@@ -70,13 +70,13 @@ class BilingualDataset(nn.Module):
             .unsqueeze(0)
             .unsqueeze(0)
             .int(),
-            "decoder_mask": (decoder_input != self.pad_token)
-            .unsqueeze(0)
-            .unsqueeze(0)
-            .int()
+            "decoder_mask": (decoder_input != self.pad_token).unsqueeze(0).int()
             & (
-                torch.triu(torch.ones(1, self.seq_len, self.seq_len), diagonal=1) == 0
-            ).int(),
+                torch.triu(
+                    torch.ones((1, self.seq_len, self.seq_len)), diagonal=1
+                ).type(torch.int)
+                == 0
+            ),
             "label": label,
             "src_text": item["translation"][self.lang_src],
             "tgt_text": item["translation"][self.lang_tgt],

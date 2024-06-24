@@ -4,6 +4,7 @@ import torch
 import tqdm  # type: ignore
 from torch import nn
 from torch.nn.parallel import DistributedDataParallel
+from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.tensorboard import SummaryWriter
 
 from data.data_utils import get_dataset
@@ -13,6 +14,12 @@ from training.train_utils import (
     get_weights_file_path,
     run_validation,
 )
+
+
+def lr_lambda(step_num, config):
+    arg1 = step_num**-0.5
+    arg2 = step_num * (400**-1.5)
+    return config.d_model**-0.5 * min(arg1, arg2)
 
 
 def train_model(config):
@@ -27,7 +34,12 @@ def train_model(config):
     model = get_model(
         config, tokenizer_src.get_vocab_size(), tokenizer_tgt.get_vocab_size()
     ).to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=config.lr, eps=1e-9)
+    optimizer = torch.optim.Adam(
+        model.parameters(), lr=config.lr, betas=(0.9, 0.98), eps=1e-9
+    )
+    scheduler = LambdaLR(
+        optimizer, lr_lambda=lambda step_num: lr_lambda(step_num, config)
+    )
     criterion = nn.CrossEntropyLoss(
         ignore_index=tokenizer_src.token_to_id("[PAD]"), label_smoothing=0.1
     ).to(device)
@@ -86,6 +98,7 @@ def train_model(config):
 
             loss.backward()
             optimizer.step()
+            scheduler.step()
             optimizer.zero_grad()
 
             global_step += 1

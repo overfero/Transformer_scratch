@@ -40,9 +40,9 @@ def get_default_config() -> ModelConfig:
 
     return ModelConfig(
         batch_size=8,
-        num_epochs=30,
+        num_epochs=1000,
         experiment_name="runs/tmodel",
-        lr=1e-4,
+        lr=1e-3,
         seq_len=600,
         d_model=512,
         lang_src="en",
