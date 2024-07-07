@@ -17,6 +17,8 @@ from training.train_utils import (
 
 
 def lr_lambda(step_num, config):
+    if step_num == 0:
+        step_num = 1
     arg1 = step_num**-0.5
     arg2 = step_num * (400**-1.5)
     return config.d_model**-0.5 * min(arg1, arg2)
